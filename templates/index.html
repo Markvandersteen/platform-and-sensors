@@ -7,6 +7,7 @@
     <script type="text/javascript" src="//code.jquery.com/jquery-1.4.2.min.js"></script>
     <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/socket.io/1.3.5/socket.io.min.js"></script>
     <script type="text/javascript" charset="utf-8">
+
         $(document).ready(function(){
 
             namespace = '/test'; // change to an empty string to use the global namespace
@@ -14,22 +15,26 @@
             var ctx2 = document.getElementById("humidity").getContext("2d");
             var data = {
              labels: [],
-            datasets: [
-            {
-                    label: "My First dataset",
-                    fillColor: "rgba(220,220,220,0.2)",
-                    strokeColor: "rgba(220,220,220,1)",
-                    pointColor: "rgba(220,220,220,1)",
-                    pointStrokeColor: "#fff",
-                    pointHighlightFill: "#fff",
-                    pointHighlightStroke: "rgba(220,220,220,1)",
-                    data: []
-                    }
-                ]
-            };
+            datasets:
+            [{
+                label: "My First dataset",
+                fillColor: "rgba(220,220,220,0.2)",
+                strokeColor: "rgba(220,220,220,1)",
+                pointColor: "rgba(220,220,220,1)",
+                pointStrokeColor: "#fff",
+                pointHighlightFill: "#fff",
+                pointHighlightStroke: "rgba(220,220,220,1)",
+                data: []
+            }]
+        };
 
             var myLineChart = new Chart(ctx).Line(data);
             var humidityChart = new Chart(ctx2).Line(data);
+
+            //curre
+            currentTemp = document.querySelector('.temp'),
+            currentHum = document.querySelector('.hum');
+
             // the socket.io documentation recommends sending an explicit package upon connection
             // this is specially important when using the global namespace
             var socket = io.connect('http://' + document.domain + ':' + location.port + namespace);
@@ -40,10 +45,12 @@
                 if(msg.temperature){
                         myLineChart.addData([msg.temperature], msg.count);
                         myLineChart.update();
+                        currentTemp.textContent = msg.temperature;
                  }
                  if(msg.humidity){
                     humidityChart.addData([msg.humidity], msg.count);
                     humidityChart.update();
+                    currentHum.textContent = msg.humidity;
                  }
                 // $('#log').append('<br>' + $('<div/>').text('Received #' + msg.count + ': ' + msg.temperature + msg.humidity).html());
             });
@@ -60,13 +67,17 @@
     </script>
 </head>
 <body>
-    <h1>Sensor data by socket</h1>
-    <h2>Receive:</h2>
-    <div class="temperature">
-            <canvas id="myChart" width="981" height="438"></canvas>
+    <div id="hot">
+        <span class="temp"> </span>
+        <div class="temp">
+                <canvas id="myChart" width="1800" height="438"></canvas>
+        </div>
     </div>
-    <div class="humidity">
-            <canvas id="humidity" width="981" height="438"></canvas>
+    <div id="wet">
+        <span class="hum">  </span>
+        <div id="humidityContainer">
+                <canvas id="humidity" width="1800" height="438"></canvas>
+        </div>
     </div>
     <div id="log"></div>
 </body>

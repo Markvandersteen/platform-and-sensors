@@ -61,7 +61,7 @@ def background_thread():
         # humidity, temperature = Adafruit_DHT.read_retry(Adafruit_DHT.AM2302 , 4)
         humidity = 44.22
         temperature = 21.23
-        time.sleep(4)
+        time.sleep(2)
         socketio.emit('my response',
                       {'data': 'Server generated response ', 'count': count, 'humidity' : humidity, 'temperature' : temperature},
                       namespace='/test')
