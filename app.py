@@ -34,6 +34,8 @@ elif async_mode == 'gevent':
     monkey.patch_all()
 
 import time
+import sys
+import Adafruit_DHT
 from threading import Thread
 from flask import Flask, render_template, session, request
 from flask_socketio import SocketIO, emit, join_room, leave_room, \
@@ -49,10 +51,11 @@ def background_thread():
     """Example of how to send server generated events to clients."""
     count = 0
     while True:
+        humidity, temperature = Adafruit_DHT.read_retry(Adafruit_DHT.AM2302 , 4)
         time.sleep(1)
         count += 1
         socketio.emit('my response',
-                      {'data': 'Server generated event', 'count': count, 'time' : "test"},
+                      {'data': 'Server generated response ', 'count': count, 'humidity' : humidity, 'temperature' : temperature},
                       namespace='/test')
 
 
