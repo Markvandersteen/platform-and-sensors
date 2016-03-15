@@ -35,28 +35,37 @@ elif async_mode == 'gevent':
 
 import time
 import sys
-import Adafruit_DHT
+# import Adafruit_DHT
 from threading import Thread
+import os
 from flask import Flask, render_template, session, request
 from flask_socketio import SocketIO, emit, join_room, leave_room, \
     close_room, rooms, disconnect
 
-app = Flask(__name__)
+# setting up template directory
+ASSETS_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'assets')
+CSS_DIR =os.path.join(os.path.dirname(os.path.abspath(__file__)), 'css')
+print (ASSETS_DIR)
+app = Flask(__name__, static_folder=ASSETS_DIR)
 app.config['SECRET_KEY'] = 'secret!'
 socketio = SocketIO(app, async_mode=async_mode)
 thread = None
 
 
+
 def background_thread():
     """Example of how to send server generated events to clients."""
     count = 0
+
     while True:
-        humidity, temperature = Adafruit_DHT.read_retry(Adafruit_DHT.AM2302 , 4)
-        time.sleep(1)
-        count += 1
+        # humidity, temperature = Adafruit_DHT.read_retry(Adafruit_DHT.AM2302 , 4)
+        humidity = 44.22
+        temperature = 21.23
+        time.sleep(4)
         socketio.emit('my response',
                       {'data': 'Server generated response ', 'count': count, 'humidity' : humidity, 'temperature' : temperature},
                       namespace='/test')
+        count += 1
 
 
 @app.route('/')
